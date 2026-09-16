@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Profile() {
   const [showButton, setShowButton] = useState(false);
@@ -80,4 +81,51 @@ function ProfileForm() {
   );
 }
 
-export { Profile, Login, Users, Counter, Search, ProfileForm };
+function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [msg, setMsg] = useState("msg");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!email) {
+      setMsg("email is not valid");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post("/api/login", {
+        email,
+      });
+
+      setMsg(response.data.message);
+    } catch {
+      setMsg("Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="email">Email</label>
+
+      <input
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+
+      <h1>{loading ? "Loading..." : msg}</h1>
+
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+
+export default LoginForm;
+
+export { Profile, Login, Users, Counter, Search, ProfileForm, LoginForm };

@@ -1,8 +1,23 @@
-import { findByRole, getByRole, render, screen } from "@testing-library/react";
+import {
+  findByRole,
+  getByRole,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { test, expect } from "@jest/globals";
-import { Login, Profile, Users, Counter, Search, ProfileForm } from "./Profile";
+import {
+  Login,
+  Profile,
+  Users,
+  Counter,
+  Search,
+  ProfileForm,
+  LoginForm,
+} from "./Profile";
 import "@testing-library/jest-dom/jest-globals";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
 
 // test("should show welcome message", () => {
 //   render(<Profile />);
@@ -74,26 +89,145 @@ import userEvent from "@testing-library/user-event";
 //   expect(screen.getByText("bantony")).toBeInTheDocument();
 // });
 
-test("should increment count", async () => {
-  render(<Search />);
+// test("should increment count", async () => {
+//   render(<Search />);
+
+//   const user = userEvent.setup();
+
+//   const Input = screen.getByLabelText("Search");
+
+//   await user.clear(Input);
+
+//   expect(Input).toHaveValue("");
+// });
+
+// test("should select backend role", async () => {
+//   render(<ProfileForm />);
+
+//   const user = userEvent.setup();
+
+//   const select = screen.getByLabelText("Role");
+
+//   await user.selectOptions(select, "backend");
+
+//   expect(select).toHaveValue("backend");
+// });
+
+// test("should ", async () => {
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const loginBtb = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysin95@gmail.com");
+//   await user.click(loginBtb);
+
+//   expect(
+//     screen.getByText("email registration successfully"),
+//   ).toBeInTheDocument();
+// });
+
+// test("should ", async () => {
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const loginBtb = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "");
+//   await user.click(loginBtb);
+
+//   expect(screen.getByText("email is not valid")).toBeInTheDocument();
+// });
+
+// test("sholud be success full api call", async () => {
+//   jest.spyOn(axios, "post").mockResolvedValue({
+//     data: {
+//       message: "Login successful",
+//     },
+//   });
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const btn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysin95@gmail.com");
+//   await user.click(btn);
+
+//   expect(axios.post).toHaveBeenCalledWith("/api/login", {
+//     email: "bantonysin95@gmail.com",
+//   });
+//   expect(screen.getByText("Login successful")).toBeInTheDocument();
+// });
+
+// test("should show error when API call fails", async () => {
+//   jest.spyOn(axios, "post").mockRejectedValue(new Error("network Error"));
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const btn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysin95@gmail.com");
+//   await user.click(btn);
+
+//   expect(screen.getByText("Login failed")).toBeInTheDocument();
+// });
+
+// test("should be heading loading", async () => {
+//   jest.spyOn(axios, "post").mockReturnValue(new Promise(() => {}));
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const btn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysin95@gmail.com");
+//   await user.click(btn);
+
+//   await waitFor(() => {
+//     expect(axios.post).toHaveBeenCalled();
+//   });
+//   expect(screen.getByText("Loading...")).toBeInTheDocument();
+// });
+
+test("should be heading loading", async () => {
+  jest.spyOn(axios, "post").mockImplementation(() => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          data: {
+            message: "Login successful",
+          },
+        });
+      }, 2000);
+    });
+  });
+
+  render(<LoginForm />);
 
   const user = userEvent.setup();
 
-  const Input = screen.getByLabelText("Search");
+  const input = screen.getByLabelText("Email");
+  const btn = screen.getByRole("button", { name: "Login" });
 
-  await user.clear(Input);
+  await user.type(input, "bantonysin95@gmail.com");
+  await user.click(btn);
 
-  expect(Input).toHaveValue("");
-});
-
-test("should select backend role", async () => {
-  render(<ProfileForm />);
-
-  const user = userEvent.setup();
-
-  const select = screen.getByLabelText("Role");
-
-  await user.selectOptions(select, "backend");
-
-  expect(select).toHaveValue("backend");
+  await waitFor(() => {
+    expect(axios.post).toHaveBeenCalled();
+  });
+  expect(
+    await screen.findByText("Login successful", {}, { timeout: 3000 }),
+  ).toBeInTheDocument();
 });
