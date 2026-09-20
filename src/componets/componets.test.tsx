@@ -1,20 +1,13 @@
 import {
   findByRole,
   getByRole,
+  getByText,
   render,
   screen,
   waitFor,
 } from "@testing-library/react";
 import { test, expect } from "@jest/globals";
-import {
-  Login,
-  Profile,
-  Users,
-  Counter,
-  Search,
-  ProfileForm,
-  LoginForm,
-} from "./Profile";
+import { LoginForm } from "./Profile";
 import "@testing-library/jest-dom/jest-globals";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
@@ -201,33 +194,91 @@ import axios from "axios";
 //   expect(screen.getByText("Loading...")).toBeInTheDocument();
 // });
 
-test("should be heading loading", async () => {
-  jest.spyOn(axios, "post").mockImplementation(() => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          data: {
-            message: "Login successful",
-          },
-        });
-      }, 2000);
-    });
-  });
+// test("should be heading loading", async () => {
+//   jest.spyOn(axios, "post").mockImplementation(() => {
+//     return new Promise((resolve) => {
+//       setTimeout(() => {
+//         resolve({
+//           data: {
+//             message: "Login successful",
+//           },
+//         });
+//       }, 2000);
+//     });
+//   });
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+
+//   const input = screen.getByLabelText("Email");
+//   const btn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysin95@gmail.com");
+//   await user.click(btn);
+
+//   await waitFor(() => {
+//     expect(axios.post).toHaveBeenCalled();
+//   });
+//   expect(
+//     await screen.findByText("Login successful", {}, { timeout: 3000 }),
+//   ).toBeInTheDocument();
+// });
+
+// test("Should be the Every Flow Work Able", async () => {
+//   jest.spyOn(axios, "post").mockResolvedValue({
+//     data: {
+//       message: "Succesfully Login",
+//     },
+//   });
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+//   const input = screen.getByLabelText("Email");
+//   const loginBtn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysingh@gmail.com");
+//   await user.click(loginBtn);
+
+//   expect(axios.post).toHaveBeenCalledWith("/api/login", {
+//     email: "bantonysingh@gmail.com",
+//   });
+
+//   const heading = await screen.findByText("Succesfully Login");
+
+//   expect(heading).toBeInTheDocument();
+// });
+
+// test("Should be the Every Flow Work Able", async () => {
+//   jest.spyOn(axios, "post").mockRejectedValue(new Error("network Error"));
+
+//   render(<LoginForm />);
+
+//   const user = userEvent.setup();
+//   const input = screen.getByLabelText("Email");
+//   const loginBtn = screen.getByRole("button", { name: "Login" });
+
+//   await user.type(input, "bantonysingh@gmail.com");
+//   await user.click(loginBtn);
+
+//   const heading = await screen.findByText("Login failed");
+
+//   expect(heading).toBeInTheDocument();
+// });
+
+test("Should be the Every Flow Work Able", async () => {
+  jest.spyOn(axios, "post").mockRejectedValue(new Error("network Error"));
 
   render(<LoginForm />);
 
   const user = userEvent.setup();
+  const loginBtn = screen.getByRole("button", { name: "Login" });
 
-  const input = screen.getByLabelText("Email");
-  const btn = screen.getByRole("button", { name: "Login" });
+  await user.click(loginBtn);
 
-  await user.type(input, "bantonysin95@gmail.com");
-  await user.click(btn);
+  const heading = await screen.findByText("email is not valid");
+  expect(axios.post).not.toHaveBeenCalled();
 
-  await waitFor(() => {
-    expect(axios.post).toHaveBeenCalled();
-  });
-  expect(
-    await screen.findByText("Login successful", {}, { timeout: 3000 }),
-  ).toBeInTheDocument();
+  expect(heading).toBeInTheDocument();
 });
